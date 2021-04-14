@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html>
 
-<head>
+  <head>
 
-  <title>Realtime communication with WebRTC</title>
+    <title>Realtime communication with WebRTC</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="css/main.css" />
 
-  <link rel="stylesheet" href="/css/main.css" />
+  </head>
 
-</head>
+  <body>
+    <h1>Realtime communication with WebRTC</h1>
 
-<body>
+    <div id="videos">
+      <video id="localVideo" autoplay muted></video>
+      <video id="remoteVideo" autoplay></video>
+    </div>
 
-  <h1>Realtime communication with WebRTC</h1>
+    <script src="node_modules/socket.io-client/socket.io.js"></script>
+    <script src="js/lib/adapter.js"></script>
+    <script src="js/main.js"></script>
 
-  <div id="videos">
-    <video id="localVideo" autoplay muted playsinline></video>
-    <video id="remoteVideo" autoplay playsinline></video>
-  </div>
-
-  <!-- This file is automatically added/served when running "node index.js". -->
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-  <script src="js/main.js"></script>
-
-</body>
+  </body>
 
 </html>

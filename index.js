@@ -2,14 +2,20 @@
 
 var os = require('os');
 var nodeStatic = require('node-static');
-var http = require('http');
+var https = require('http'); // use require('https') for https
 var socketIO = require('socket.io');
-const port = process.env.PORT || 3000;
+var fs = require("fs");
+var options = {
+  // for https:
+  //key: fs.readFileSync('key.pem'),
+  //cert: fs.readFileSync('cert.pem')
+};
 
 var fileServer = new(nodeStatic.Server)();
-var app = http.createServer(function(req, res) {
+var app = https.createServer(options,function(req, res) {
   fileServer.serve(req, res);
-}).listen(port);
+
+}).listen(1794, "0.0.0.0");
 
 var io = socketIO.listen(app);
 io.sockets.on('connection', function(socket) {
@@ -30,22 +36,21 @@ io.sockets.on('connection', function(socket) {
   socket.on('create or join', function(room) {
     log('Received request to create or join room ' + room);
 
-    var clientsInRoom = io.sockets.adapter.rooms[room];
-    var numClients = clientsInRoom ? Object.keys(clientsInRoom.sockets).length : 0;
+    var numClients = io.sockets.sockets.length;
     log('Room ' + room + ' now has ' + numClients + ' client(s)');
 
-    if (numClients === 0) {
+    if (numClients === 1) {
       socket.join(room);
       log('Client ID ' + socket.id + ' created room ' + room);
       socket.emit('created', room, socket.id);
 
-    } else if (numClients === 1) {
+    } else if (numClients === 2) {
       log('Client ID ' + socket.id + ' joined room ' + room);
       io.sockets.in(room).emit('join', room);
       socket.join(room);
       socket.emit('joined', room, socket.id);
       io.sockets.in(room).emit('ready');
-    } else { // max two clients
+    } else { // max 5 clients
       socket.emit('full', room);
     }
   });
@@ -61,8 +66,7 @@ io.sockets.on('connection', function(socket) {
     }
   });
 
-  socket.on('bye', function(){
+  socket.on('bye', function() {
     console.log('received bye');
   });
-
 });
